@@ -11,21 +11,26 @@ from target_config import MSF_PASS, TARGET_IP, TARGET_INTERFACE, TARGET_USERNAME
 from conquer import Tenfold as tf
 import re
 def somerandomcode1():
-    # cci=cc()
-    # nri=nr()
-    # fci=fc()
-    # fsi=fs() 
-    # wpi=wp()
-    # csi=cs()
-    # swi=sw()
-    # psi=ps()
-    tfi=tf()
-    tfi.ten(file="D:\\SurzsEnviro\\shared\\command.py",interval=600, repeat=True)
-    if True:
-        pass
-    else:
-        print("This should never happen")
+    cci=cc()
+    nri=nr()
+    fci=fc()
+    fsi=fs() 
+    wpi=wp()
+    csi=cs()
+    swi=sw()
+    psi=ps()
+    
 
+
+
+
+
+
+
+
+
+
+    
 if __name__ == "__main__":
     somerandomcode1()
     
