@@ -1,3 +1,5 @@
+from email.mime import message
+import os
 from pathlib import Path
 import subprocess  
 import platform
@@ -49,7 +51,7 @@ class ComputerSpeak:
             print(f"Command failed ({e.returncode}): {error_output}")
             self._write_log(command, f"ERROR ({e.returncode}): {error_output}")
             return None
-    
+     
 
 
     def fuzz_command(self, command_template: str, fuzz_values: list):
@@ -65,4 +67,12 @@ class ComputerSpeak:
                 print(f"Iteration {i+1}/{iterations}, Fuzzing with value: {value}")
                 self.execute_command(command)
                 time.sleep(1)  # Sleep to avoid overwhelming the system; adjust as needed
+
+    def speak(self, message: str): #lets just keep with write ouput and utilizing the log function
+        if os.name == "nt":
+             self.execute_command(f"Write-Output '{message}'")
+             self._write_log("speak", message)
+        else:
+             self.execute_command(f"echo '{message}'")
+             self._write_log("speak", message)
 
