@@ -17,6 +17,17 @@ class Tenfold:
     MANIFEST_NAME = "execution.json"
     DEFAULT_POLL_INTERVAL = 60
 
+    DEFAULT_CORE_DEPS = (
+        "computerspeak.py",
+        "fileshuttle.py",
+        "enumeration.py",
+        "shellwalking.py",
+        "netrunning.py",
+        "dacore.py",
+        "whatprocess.py",
+        "conquer.py",
+    )
+
     def __init__(
         self,
         source_dir: str | Path | None = None,
@@ -24,6 +35,8 @@ class Tenfold:
         execution_file: str | Path | None = None,
         poll_interval: int = DEFAULT_POLL_INTERVAL,
         approved_extensions: tuple[str, ...] | None = None,
+        core_deps: tuple[str, ...] | None = None,
+        core_deps_dir: str | Path | None = None,
     ):
         self.cs = cs()
         self.source_dir = self._resolve_path(source_dir, self._default_source_dir())
@@ -36,6 +49,10 @@ class Tenfold:
         self.poll_interval = int(poll_interval)
         self.allowed_extensions = tuple(
             extension.lower() for extension in (approved_extensions or self._default_extensions())
+        )
+        self.core_deps = tuple(core_deps if core_deps is not None else self.DEFAULT_CORE_DEPS)
+        self.core_deps_dir = self._resolve_path(
+            core_deps_dir, Path(__file__).resolve().parent
         )
         self._manifest_lock = Lock()
 
@@ -191,6 +208,16 @@ class Tenfold:
             if self._needs_copy(source_file, destination_file):
                 shutil.copy2(source_file, destination_file)
                 self._log(f"Staged script {source_file.name} to {destination_file}")
+
+        for dep_name in self.core_deps:
+            dep_source = self.core_deps_dir / dep_name
+            if not dep_source.exists():
+                self._log(f"Core dep not found, skipping: {dep_source}")
+                continue
+            dep_dest = self.working_dir / dep_name
+            if self._needs_copy(dep_source, dep_dest):
+                shutil.copy2(dep_source, dep_dest)
+                self._log(f"Synced core dep {dep_name} to {dep_dest}")
 
     async def sync_local_scripts(self, destiny: str | Path | None = None):
         """Continuously stage approved scripts from the local source folder."""
