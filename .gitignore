@@ -1,0 +1,6 @@
+*
+!.gitignore
+!*.py
+!*.ps1
+
+*_config.py
