@@ -71,10 +71,10 @@ class ComputerSpeak:
     def speak(self, message: str): #lets just keep with write ouput and utilizing the log function
         if os.name == "nt":
              self.execute_command(f"Write-Output '{message}'")
-             self._write_log("speak", message)
+
         else:
              self.execute_command(f"echo '{message}'")
-             self._write_log("speak", message)
+
 
 
 if __name__ == "__main__":

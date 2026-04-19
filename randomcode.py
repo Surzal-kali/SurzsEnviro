@@ -19,6 +19,7 @@ def somerandomcode1():
     csi=cs()
     swi=sw()
     psi=ps()
+    csi.speak("hi!")
     
 
 
@@ -27,13 +28,6 @@ def somerandomcode1():
 
 
 
-
-
-
-    
-if __name__ == "__main__":
-    somerandomcode1()
-    
 
 
 
