@@ -82,7 +82,7 @@ class WhatProcess:
             command = f"Write-Output {payload} | powershell -Command \"Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.Clipboard]::SetText((Get-Content -Raw));\"; powershell -Command \"Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.Clipboard]::GetText() | Out-File -FilePath payload.txt -Encoding ASCII\"; powershell -Command \"Start-Process -FilePath payload.txt -Verb RunAs\""
         else:
             command = f"Write-Output '{payload}' > /tmp/payload.sh; chmod +x /tmp/payload.sh; sudo -u $(ps -o user= -p {pid}) /tmp/payload.sh"
-        self.cs.execute_command(f"Write-Output Injecting payload into process with PID: {pid}")
+        self.cs.speak(f"Injecting payload into process with PID: {pid}")
         self.cs.execute_command(command)
         print(f"Payload '{payload}' has been injected into process with PID {pid}.")
     def restart_service (self, service_name: str):
@@ -120,9 +120,10 @@ class WhatProcess:
     def remove_cron_job(self, command: str):
         """Remove a scheduled cron job by its command. This function takes a command string as input and attempts to remove any scheduled cron jobs that match the provided command. It uses different commands based on the operating system (Windows or Unix-like) to perform the removal. The function includes error handling to catch and report any issues that may arise during the removal process, and it provides feedback on whether the cron job was successfully removed or if an error occurred."""
         # This is a placeholder implementation. You would need to implement the actual logic to remove cron jobs based on your requirements.
-        self.cs.execute_command(f"Write-Output Removing cron job: '{command}'") #oh yeah i never finished this part. whoops. well you get the idea. just need to parse the crontab and remove the line with the command in it. ye. regex and matching. das all. 
+        self.cs.speak(f"Removing cron job: '{command}'") #oh yeah i never finished this part. whoops. well you get the idea. just need to parse the crontab and remove the line with the command in it. ye. regex and matching. das all. 
         # Example of simulating cron job removal
         print(f"Cron job '{command}' has been removed.") #that ones importante. another windows/linux branch
+        
         def kill_process_by_name(self, pid: int):
             csi = cs()
             try:

@@ -36,7 +36,11 @@ class ComputerSpeak:
         """Build a subprocess argument list from the detected command prefix."""
         if self.os_name == "Windows":
             command = "$ErrorActionPreference = 'Stop'; " + command
-        return self.command_prefix.strip().split() + [command]
+            return ["powershell", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", command]
+        elif self.os_name in ["Linux", "Darwin"]:
+            return ["/bin/bash", "-l", "-c", command]
+        else:
+            raise NotImplementedError(f"Unsupported operating system: {self.os_name}")
 
     def execute_command(self, command: str):
         """Execute a command on the system and log the output."""
@@ -69,8 +73,10 @@ class ComputerSpeak:
                 time.sleep(1)  # Sleep to avoid overwhelming the system; adjust as needed
 
     def speak(self, message: str): #lets just keep with write ouput and utilizing the log function
-        if os.name == "nt":
-             self.execute_command(f"Write-Output '{message}'")
+        # Escape single quotes for shell safety: 'string' -> 'string'"'"'string'
+        if self.os_name == "Windows":
+            self.execute_command(f"Write-Output '{message}'")
         else:
-             self.execute_command(f"echo '{message}'")
+            escaped_message = message.replace("'", "'\"'\"'")
+            self.execute_command(f"echo '{escaped_message}'")
 
