@@ -37,14 +37,14 @@ class NetRunning:
                 for port in lport:
                     if 'script' in nm[host][proto][port]:
                         script_output[(port, proto)] = nm[host][proto][port]['script']
-        self.cs.execute_command(f"echo 'Nmap script output for {target_ip}: {script_output}'")
+        self.cs.speak(f"Nmap script output for {target_ip}: {script_output}")
         return script_output
     
 
 
     def create_server(self,folder:str, port: int):
         """Create a simple HTTP server on the specified port to serve files or payloads."""
-        self.cs.execute_command(f"echo 'Starting simple HTTP server on port {port}'")
+        self.cs.speak(f"Starting simple HTTP server on port {port}")
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.bind(('', port))
         if platform.system() == "Windows":
@@ -56,27 +56,27 @@ class NetRunning:
 
     def stop_server(self):
         """Stop the HTTP server."""
-        self.cs.execute_command("echo 'Stopping HTTP server'")
+        self.cs.speak("Stopping HTTP server")
         if hasattr(self, 'socket'):
             self.socket.close()
 
 
 
-    def search_sploit(self, target_ip: str, service: str):
-        """Search for exploits related to a specific service on the target IP using searchsploit."""
-        self.cs.speak(f'Searching for exploits related to {service} on {target_ip}')
-        command = f"searchsploit --nmap SurzsEnviro/SurzalsVulns/nmap_ports_{target_ip}.txt --service {service} --json"
+    def search_sploit(self, service: str):
+        """Search for exploits related to a specific service using searchsploit."""
+        self.cs.speak(f'Searching for exploits related to {service}')
+        command = f"searchsploit -c {service} -j"
         result = self.cs.execute_command(command)
         if result:
             try:
                 exploits = json.loads(result)
-                self.cs.speak(f"Exploits found for {service} on {target_ip}: {exploits}")
+                self.cs.speak(f"Exploits found for {service}: {exploits}")
                 return exploits
             except json.JSONDecodeError:
-                self.cs.speak(f"Failed to parse searchsploit output for {service} on {target_ip}")
+                self.cs.speak(f"Failed to parse searchsploit output for {service}. Raw output: {result}")
                 return None
         else:
-            self.cs.speak(f"No exploits found for {service} on {target_ip}")
+            self.cs.speak(f"No exploits found for {service}")
             return None
         
     def iter_nmap_lines(self, path=None):
@@ -198,20 +198,16 @@ class NetRunning:
             return False
 
             
-    @staticmethod
-    def _extract_hosts_from_nmap(output):
-        """Extract hosts from Nmap scan output."""
-        hosts = []
-        seen = set()
-        for line in output.splitlines():
-            if "Nmap scan report for" not in line: #this doesn't work tho. 
-                continue
-            match = IPV4_RE.search(line)
-            if not match:
-                continue
-            host = match.group(0)
-            if host not in seen:
-                seen.add(host)
-                hosts.append(host)
-        return hosts
 
+
+    @staticmethod
+    def _extract_hosts_from_nmap(nmap_output):
+        """Extract hosts from Nmap output using regular expressions."""
+        hosts = set()
+        for line in nmap_output.splitlines():
+            match = IPV4_RE.search(line)
+            if match:
+                ip = match.group()
+                if ip != SELF_IP_RE:
+                    hosts.add(ip)
+        return list(hosts)
