@@ -96,8 +96,14 @@ class FileShuttle:
         except Exception as e:
             print(f"Error zipping directory: {e}")#:D we can use this to zip up the surzsenviro folder at the end and move it to the new host. :D or establish multiple hosts!!! so many options.
     #forgot we can just cs.execute_command to serve files :D
-
-
+    def append_file(self, file_path: str, content: str):
+        """Append content to a file at the specified file path. This function takes a file path and a content string as input and attempts to append the provided content to the existing file at the specified location. It includes error handling to catch and report any issues that may arise during the file appending process, and it provides feedback on whether the content was successfully appended or if an error occurred."""
+        try:
+            with open(file_path, "a", encoding="utf-8") as f:
+                f.write(content)
+            print(f"Content appended to file: {file_path}")
+        except Exception as e:
+            print(f"Error appending to file: {e}")
 
 
 if __name__ == "__main__":

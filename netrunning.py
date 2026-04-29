@@ -11,7 +11,7 @@ import time
 import socket
 import nmap
 import os
-from target_config import TARGET_IP, TARGET_INTERFACE, SELF_IP_RE, TARGET_RANGE, IPV4_RE, TARGET_PASSWORD, TARGET_USERNAME
+from target_config import SELF_IP_RE, TARGET_RANGE, IPV4_RE, TARGET_PASSWORD, TARGET_USERNAME
 class NetRunning:
     def __init__(self):
         self.cs = cs()
@@ -149,26 +149,6 @@ class NetRunning:
             thread.daemon = True
             thread.start()
             return httpd, thread
-
-    @staticmethod
-    def check_rdp_connection():
-        """Check if RDP connection to the target host is successful. This function attempts to establish a socket connection to the target IP on the default RDP port (3389) and returns True if successful, or False if the connection fails. It also includes error handling to catch and report any socket errors or unexpected exceptions that may occur during the connection attempt."""
-        try:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.settimeout(5)  # Set a timeout for the connection attempt
-            result = sock.connect_ex((TARGET_IP, 3389))  # RDP typically uses port 3389. its also my favorite port :D, the very first one i memorized weirdly enough.
-            sock.close()
-            if result == 0:
-                return True
-            else:
-                print(f"RDP connection failed with error code: {result}")
-                return False
-        except socket.error as e:
-            print(f"Socket error occurred: {e}")
-            return False
-        except Exception as e:
-            print(f"An unexpected error occurred: {e}")
-            return False
 
 
         

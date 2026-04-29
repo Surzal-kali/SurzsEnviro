@@ -11,12 +11,12 @@ from pathlib import Path
 import time
 import paramiko
 import computerspeak as cs
-
+#thinking about it this could be a great blue-team if fleshed out.
 SYS_KEYWORDS = {
     "Source Port","Destination Port",  "Timestamps", "UDP payload", "TCP payload", "HTTP", "DNS", "SSL", "TLS", "FTP", "SMTP", "IMAP", "POP3", "sudo", "nano", "vim", "code", "python", "ssh", "scp", "cat", "ls", "cd", "clear", "dir", "type", "more", "less", "head", "tail", "find", "grep", "awk", "sed", "curl", "wget", "ping", "traceroute", "netstat", "ss", "lsof", "ps", "top", "htop", "systemctl", "service", "journalctl", "grep", "curl", "wget", "ping", "traceroute", "netstat", "ss", "lsof", "ps", "top", "htop", "systemctl", "service",
     "firewall", "ufw", "iptables", "nmap", "dns", "dig", "nslookup", "tcpdump", "wireshark", "pyshark", "scapy", "msfconsole", "msfrpc", "metasploit", "powershell", "bash", "zsh", "history", "env", "printenv", "set", "export", "alias", "unalias", "which", "whereis", "locate", "find", "updatedb", "crontab", "at",
     "docker", "kubectl", "helm", "aws", "az", "gcloud", "tailscale", "ollama", "lm studio", "obs",  "xbox", "epic", "gog", "origin", "uplay", "battle.net", "riot client", "blizzard app", "nvidia geforce experience", "amd radeon software", "intel graphics command center"
-}#i realize thats probably not gunna help but its wired anyway
+}
 class ShellWalker ():
     """Designed to crawl through shell history files based on user consent preferences. This includes identifying the shell type (e.g., bash, zsh, powershell), analyzing the system path for custom commands, locating the appropriate history file, and extracting command history while respecting any out-of-scope settings specified by the user. The ShellWalker class is intended to operate within the bounds of user consent, ensuring that only authorized data is collected while providing insights into the shell commands executed during the session. The collected shell history can then be used for further analysis in the digestion process and summarized in the report card."""
     def __init__(self, out_of_scope=None):

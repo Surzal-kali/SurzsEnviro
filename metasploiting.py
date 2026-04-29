@@ -27,7 +27,7 @@ def _get_client():
             "pymetasploit3 is not installed. Install SurzsEnviro/requirements.txt before using Metasploit helpers."
         ) from _MSF_IMPORT_ERROR
     if client is None:
-        client = MsfRpcClient(password=MSF_PASS, port=55552, ssl=True)
+        client = MsfRpcClient(password=MSF_PASS, port=55552, ssl=False)
     return client
 
 
@@ -79,18 +79,7 @@ def payload_generation(payload_name, options):
     return generated_payload
 
 
-if __name__ == "__main__":
-    # Example usage of the Metasploit helper functions
-    try:
-        search_results = search_modules("windows")
-        print("Search Results:", search_results)
 
-        payload_options = {
-            "LHOST": "127.0.0.1",
-            "LPORT": 4444
-        }
-        generated_payload = payload_generation("windows/meterpreter/reverse_tcp", payload_options)
-        print("Generated Payload:", generated_payload)
-    except Exception as e:
-        print("An error occurred:", e)
+    # Example usage of the Metasploit helper functions
+    
 #my entire cybersecurity class is metasploitable, so i need this to work lmfao. course work begins in a few hours, and i want to have this ready to go. i will figure it out hey your right! in 3 hours.
