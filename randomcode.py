@@ -25,6 +25,6 @@ def somerandomcode1():
     ori=Or()
     ori.preflight()
     csi.speak("[*] Starting random code execution...")
-    9
+    
 if __name__ == "__main__":
     somerandomcode1()

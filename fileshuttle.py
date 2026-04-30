@@ -101,7 +101,6 @@ class FileShuttle:
         try:
             with open(file_path, "a", encoding="utf-8") as f:
                 f.write(content)
-            print(f"Content appended to file: {file_path}")
         except Exception as e:
             print(f"Error appending to file: {e}")
 

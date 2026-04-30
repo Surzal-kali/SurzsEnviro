@@ -1,5 +1,6 @@
 
 import re
+from fileshuttle import FileShuttle
 from netrunning import NetRunning as nr
 from target_config import TARGET_RANGE, TARGET_USERNAME, WORDLIST_PATH
 
@@ -17,21 +18,20 @@ class Orchestrator:
             from netrunning import NetRunning as nr
             from metasploiting import search_modules, execute_module, list_sessions, payload_generation, get_db_status
             from catchingpackets import PacketSniffer as ps
-            csi.speak("[*] Successfully imported attack modules.")
+            print("[*] Successfully imported attack modules.")
         except ImportError as e:
-            csi.speak(f"[-] Error importing attack modules: {e}")
+            print(f"[-] Error importing attack modules: {e}")
             return
         try:
             from shellwalking import ShellWalker
             from fileshuttle import FileShuttle
             from enumeration import FileCrawler
-            csi.speak("[*] Successfully imported data collection modules.")
+            print("[*] Successfully imported data collection modules.")
         except ImportError as e:
-            csi.speak(f"[-] Error importing data collection modules: {e}")
+            print(f"[-] Error importing data collection modules: {e}")
             return
         shi = ShellWalker()
         fsi = FileShuttle()
-        csi.speak("[*] Starting shell history collection...")
         new_history = fsi.list_directory("/bin")  # Example path, adjust as needed
         if new_history:
             print("[*] New shell history found, would you like to review? (y/n)")
@@ -47,13 +47,21 @@ class Orchestrator:
                     elif re.search(r"\b(curl|wget|ftp|scp|sftp)\b", sanitized_item):
                         fsi.append_file("rawbin.txt", f"[*] Detected potential file transfer command: {sanitized_item}\n")
                     else:
-                        fsi.append_file("rawbin.txt", f"[*] No specific attack pattern detected in command: {sanitized_item}\n")
+                        continue
         else:
-            csi.speak("[*] No new shell history found.")
-        csi.speak("[*] Orchestration complete. Attack modules are ready for use based on the collected shell history and analysis.")
+            print("[*] No new shell history found.")
+        print("[*] Orchestration complete. Attack modules are ready for use based on the collected shell history and analysis.")
+
 
 
 
 if __name__ == "__main__":
+    fsi = FileShuttle() 
     ori = Orchestrator()
     ori.preflight()
+    choice = input("[*] Would you like to clean the collected shell history? (y/n): ")
+    if choice.lower() == "y":
+        fsi.delete_file("rawbin.txt")  # Clear the file
+        print("[*] Shell history cleaned.")
+    else:
+        print("[*] Shell history retained.")

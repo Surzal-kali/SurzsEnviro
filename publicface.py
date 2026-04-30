@@ -15,6 +15,9 @@ from orchestrator import Orchestrator as Or
 import requests 
 
 class publicface:
+    """This class is designed to operate similar to how the Burp Suite's Collaborator works, providing a public-facing interface for various functionalities of SurzsEnviro. It can be used for testing, demonstrations, or as a simple interface for users to interact with the underlying tools and modules."""
+    #note to self, need to do more research on this with requests, maybe beautiful soup?
+    
     def __init__(self):
         self.nri=nr()
         self.fci=fc()
