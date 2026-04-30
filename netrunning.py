@@ -185,6 +185,8 @@ class NetRunning:
     def loud_scan(target_ip_range: str, rate=1000):
         """Perform a loud scan of the target IP range using nmap with aggressive timing and verbose output."""
         csi = cs()
+        fsi=fs()
         csi.speak(f"Starting loud scan of {target_ip_range} with rate {rate} packets per second")
-        masscanr=csi.execute_command(f"masscan -p0-65535 --rate {rate} {target_ip_range} -oL loud_scan_results.txt")
-        return masscanr
+        masscanr=csi.execute_command(f"sudo masscan -p0-65535 --rate {rate} {target_ip_range} -oL loud_scan_results.txt")
+        results = fsi.file_read("loud_scan_results.txt")
+        return results

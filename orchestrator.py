@@ -51,4 +51,3 @@ class Orchestrator:
             else:
                 print(f"[*] No specific attack pattern detected in command: {item}")
         print("[*] Orchestration complete. Attack modules are ready for use based on the collected shell history and analysis.")
-
