@@ -146,3 +146,7 @@ class WhatProcess:
         except Exception as e:
             print(f"Error elevating privileges: {e}")
 
+
+if __name__ == "__main__":
+    wpi = WhatProcess()
+    wpi.list_processes()

