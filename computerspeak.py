@@ -80,3 +80,6 @@ class ComputerSpeak:
             escaped_message = message.replace("'", "'\"'\"'")
             self.execute_command(f"echo '{escaped_message}'")
 
+if __name__ == "__main__":
+    csi = ComputerSpeak()
+    csi.speak("Hello, this is a test message from ComputerSpeak!")

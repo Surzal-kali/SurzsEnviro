@@ -47,7 +47,7 @@ class FileCrawler:
             return folderstep
     def _pick_folder(self):
         """Prompt the user to select a folder for enumeration. This function allows the user to input a folder path directly or opens a folder selection dialog if no input is provided. It validates the selected folder path and returns it for further processing in the crabwalk method. If the user provides an invalid path or an error occurs during selection, it handles the exception gracefully and returns None."""
-
+        csi = cs()
         folder = None
         try:
             folder = input("Enter the path of the folder to crawl (or press Enter to open a folder selection dialog): ").strip()
@@ -56,7 +56,7 @@ class FileCrawler:
             else: 
                 return folder
         except Exception as e: #scratchy plz
-            print(f"Error selecting folder: {e}")
+            csi.speak(f"Error selecting folder: {e}")
             return None
 
     def crabwalk(self):
@@ -64,8 +64,9 @@ class FileCrawler:
 
         #（づ￣3￣）づ╭❤️～ approved
         selected_folder = self._pick_folder()
+        csi=cs()
         if not selected_folder:
-            print("No folder selected. Cannot crawl file system.")
+            csi.speak("No valid folder selected for enumeration. Skipping file crawling.")
             return []
         collected_data = []
         for root, dirs, files in os.walk(selected_folder):
@@ -73,20 +74,21 @@ class FileCrawler:
                 file_path = os.path.join(root, name)
                 filestep = self._build_payload(file_path)
                 collected_data.append(filestep)
-        print(f"Collected metadata and previews for {len(collected_data)} files from {selected_folder}.")
+        csi.speak(f"Collected metadata and previews for {len(collected_data)} files from {selected_folder}.")
         return collected_data
 MAX_COPY_DEPTH = 2
 
 
 def filecopy(source_dir, target_bin):
     """Copy a folder into target_bin up to MAX_COPY_DEPTH levels deep. This function takes a source directory and a target binary directory as parameters. It checks if the source directory is valid and then recursively copies its contents to the target directory, maintaining the directory structure up to a specified maximum depth. The function handles errors gracefully and provides feedback on the copying process."""
+    csi=cs()
     if not source_dir:
-        print("[filecopy] No source directory provided.")
+        csi.speak("[filecopy] No source directory provided.")
 
         return
     source = Path(source_dir)
     if not source.is_dir():
-        print(f"[filecopy] Source is not a directory: {source_dir}")
+        csi.speak(f"[filecopy] Source is not a directory: {source_dir}")
 
 
         return
@@ -104,8 +106,8 @@ def filecopy(source_dir, target_bin):
                 dest.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(item, dest)
     except Exception as e:
-
-        print(f"[filecopy] Error copying {source_dir} to {target_bin}: {e}")
+        csi.speak(f"[filecopy] Error copying {source_dir} to {target_bin}: {e}")
+        csi.speak(f"[filecopy] Error copying {source_dir} to {target_bin}: {e}")
 
 
 

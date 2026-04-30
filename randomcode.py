@@ -23,8 +23,8 @@ def somerandomcode1():
     psi=ps()
     tfi=tf()
     ori=Or()
-
-    
-
+    ori.preflight()
+    csi.speak("[*] Starting random code execution...")
+    9
 if __name__ == "__main__":
     somerandomcode1()
