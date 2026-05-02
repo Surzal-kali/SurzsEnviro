@@ -25,7 +25,7 @@ class PacketSniffer:
 
             capture = pyshark.LiveCapture(**capture_kwargs)
             print("Capturing packets... Press Ctrl+C to stop.")
-            capture.sniff(packet_count=packet_count, timeout=sniff_time)
+            capture.sniffd(packet_count=packet_count, timeout=sniff_time)
             for packet in capture:
                 print(f"Packet Timestamp: {packet.sniff_time}")
                 print(f"Packet Length: {packet.length} bytes")
