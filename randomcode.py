@@ -28,3 +28,5 @@ def somerandomcode1():
     
 if __name__ == "__main__":
     somerandomcode1()
+    csi=cs()
+    csi.speak("Welcome Home")
