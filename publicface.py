@@ -13,9 +13,10 @@ from target_config import MSF_PASS, TARGET_IP, TARGET_INTERFACE, TARGET_USERNAME
 from conquer import Tenfold as tf
 from orchestrator import Orchestrator as Or
 import requests 
+import platform
 
 class publicface:
-    """This class is designed to operate similar to how the Burp Suite's Collaborator works, providing a public-facing interface for various functionalities of SurzsEnviro. It can be used for testing, demonstrations, or as a simple interface for users to interact with the underlying tools and modules."""
+    """This class is designed to be the main entry point for web requests, providing a public-facing interface for various functionalities of web hunting in SurzsEnviro. It can be used for testing, demonstrations, or as a simple interface for users to interact with the underlying tools and modules."""
     #note to self, need to do more research on this with requests, maybe beautiful soup?
     
     def __init__(self):
@@ -46,9 +47,92 @@ class publicface:
             return hostname
         except socket.herror:
             return None
+    
+    @staticmethod
+    def get_request(url):
+        """Make a GET request to the specified URL and return the response content."""
+        try:
+            response = requests.get(url)
+            response.raise_for_status()  # Raise an exception for HTTP errors
+            return response.text
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred while making the GET request: {e}")
+            return None
+    @staticmethod
+    def trace_request(self, url):
+        """Trace the route to the specified URL and return the results."""
+        csi = cs()
+        fsi = fs()
+        csi.speak(f"Tracing route to {url}...")
+        command = f"tracert {url}" if platform.system() == "Windows" else f"traceroute {url}"
+        result = self.csi.execute_command(command)
+        if result:
+            self.fsi.file_write("trace_results.txt", result)
+            return result
+        else:
+            return "Failed to trace route."
         
-if __name__ == "__main__":
-    pf=publicface()
-    ori=Or()
-    ori.preflight()
-    pf.csi.speak("Hello, this is a test message from the public face of SurzsEnviro!")
+    @staticmethod
+    def put_request(url, data, headers=None):
+        """Make a PUT request to the specified URL with the given data and return the response content."""
+        try:
+            response = requests.put(url, data=data, headers=headers)
+            response.raise_for_status()  # Raise an exception for HTTP errors
+            return response.text
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred while making the PUT request: {e}")
+            return None
+        
+    @staticmethod
+    def delete_request(url, data=None):
+        """Make a DELETE request to the specified URL and return the response content."""
+        try:
+            response = requests.delete(url, data=data)
+            response.raise_for_status()  # Raise an exception for HTTP errors
+            return response.text
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred while making the DELETE request: {e}")
+            return None
+    
+    @staticmethod
+    def post_request(url, data, headers=None):
+        """Make a POST request to the specified URL with the given data and return the response content."""
+        try:
+            response = requests.post(url, data=data, headers=headers)
+            response.raise_for_status()  # Raise an exception for HTTP errors
+            return response.text
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred while making the POST request: {e}")
+            return None
+    
+    @staticmethod
+    def head_request(url, headers=None):
+        """Make a HEAD request to the specified URL and return the response headers."""
+        try:
+            response = requests.head(url, headers=headers)
+            response.raise_for_status()  # Raise an exception for HTTP errors
+            return response.headers
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred while making the HEAD request: {e}")
+            return None
+
+    @staticmethod
+    def patch_request(url, data, headers=None):
+        """Make a PATCH request to the specified URL with the given data and return the response content."""
+        try:
+            response = requests.patch(url, data=data, headers=headers)
+            response.raise_for_status()  # Raise an exception for HTTP errors
+            return response.text
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred while making the PATCH request: {e}")
+            return None
+    @staticmethod
+    def options_request(url, headers=None):
+        """Make an OPTIONS request to the specified URL and return the allowed HTTP methods."""
+        try:
+            response = requests.options(url, headers=headers)
+            response.raise_for_status()  # Raise an exception for HTTP errors
+            return response.headers.get('Allow', 'No Allow header found')
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred while making the OPTIONS request: {e}")
+            return None

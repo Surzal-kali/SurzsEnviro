@@ -11,6 +11,7 @@ import time
 import socket
 from nmap import PortScanner
 import os
+import requests
 from target_config import TARGET_IP, TARGET_INTERFACE, SELF_IP_RE, TARGET_RANGE, IPV4_RE
 class NetRunning:
     def __init__(self):
@@ -190,3 +191,4 @@ class NetRunning:
         masscanr=csi.execute_command(f"sudo masscan -p0-65535 --rate {rate} {target_ip_range} -oL loud_scan_results.txt")
         results = fsi.file_read("loud_scan_results.txt")
         return results
+    
