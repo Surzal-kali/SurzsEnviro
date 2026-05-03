@@ -9,13 +9,11 @@ def env(variable_name: str, default: str = "") -> str:
         value = input(f"[*] Please enter a value for {variable_name} (default: '{default}'): ") or default
     print(f"[*] {variable_name} set to: {value}")
     return value
-MSF_PASS = env("MSF_PASS", "")
+MSF_PASS = env("MSF_PASS", "Surzal123")
 TARGET_USERNAME= env("TARGET_USERNAME", "")
-TARGET_RANGE = env("TARGET_RANGE", "")
+TARGET_RANGE = env("TARGET_RANGE", "10.0.0.104/24")
 TARGET_IP = env("TARGET_IP", "")
-
-
-TARGET_INTERFACE = env("TARGET_INTERFACE", "")
+TARGET_INTERFACE = env("TARGET_INTERFACE", "wlan0")
 TARGET_PASSWORD = env("TARGET_PASSWORD", "")
 WORDLIST_PATH = env("WORDLIST_PATH", "./wordlist.txt")
 SELF_IP_RE = "127.0.0.1"

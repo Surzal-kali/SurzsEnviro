@@ -1,7 +1,7 @@
+import os
 import shlex
 
 from computerspeak import ComputerSpeak as cs
-from target_config import MSF_PASS
 
 try: #im not sure if this is the best way to handle this, but it should work for now. we can always refactor later if we need to.
     from pymetasploit3.msfrpc import MsfRpcClient
@@ -13,6 +13,9 @@ else:
 
 csi = cs()
 client = None
+MSF_PASS = os.getenv("MSF_PASS", "Surzal123")
+MSF_RPC_PORT = int(os.getenv("MSF_RPC_PORT", "55552"))
+MSF_RPC_SSL = os.getenv("MSF_RPC_SSL", "false").strip().lower() == "true"
 
 
 def _log_action(message):
@@ -27,7 +30,7 @@ def _get_client():
             "pymetasploit3 is not installed. Install SurzsEnviro/requirements.txt before using Metasploit helpers."
         ) from _MSF_IMPORT_ERROR
     if client is None:
-        client = MsfRpcClient(password=MSF_PASS, port=55552, ssl=False)
+        client = MsfRpcClient(password=MSF_PASS, port=MSF_RPC_PORT, ssl=MSF_RPC_SSL)
     return client
 
 

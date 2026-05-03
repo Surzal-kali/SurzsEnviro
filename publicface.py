@@ -49,10 +49,10 @@ class publicface:
             return None
     
     @staticmethod
-    def get_request(url):
+    def get_request(url, headers=None):
         """Make a GET request to the specified URL and return the response content."""
         try:
-            response = requests.get(url)
+            response = requests.get(url, headers=headers)
             response.raise_for_status()  # Raise an exception for HTTP errors
             return response.text
         except requests.exceptions.RequestException as e:
@@ -136,3 +136,41 @@ class publicface:
         except requests.exceptions.RequestException as e:
             print(f"An error occurred while making the OPTIONS request: {e}")
             return None
+    @staticmethod
+    def connect_request(url, headers=None):
+        """Make a CONNECT request to the specified URL and return the response content."""
+        try:
+            response = requests.request("CONNECT", url, headers=headers)
+            response.raise_for_status()  # Raise an exception for HTTP errors
+            return response.text
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred while making the CONNECT request: {e}")
+            return None
+        
+    @staticmethod
+    def trace_request(url):
+        """Make a TRACE request to the specified URL and return the response content."""
+        try:
+            response = requests.request("TRACE", url)
+            response.raise_for_status()  # Raise an exception for HTTP errors
+            return response.text
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred while making the TRACE request: {e}")
+            return None
+    @staticmethod
+    def is_public_ip(ip_address):
+        """Check if the given IP address is a public IP address."""
+        try:
+            ip = socket.inet_aton(ip_address)
+            # Check for private IP ranges, remember to update and add more if a box isn't cooperating. check admin panel for more info if you have one of those boxes.
+            private_ranges = [
+                (socket.inet_aton("10.0.0.0"), socket.inet_aton("10.255.255.255")),
+                (socket.inet_aton("172.16.0.0"), socket.inet_aton("172.31.255.255")),
+                (socket.inet_aton("192.168.0.0"), socket.inet_aton("192.168.255.255"))
+            ]
+            for start, end in private_ranges:
+                if start <= ip <= end:
+                    return False
+            return True
+        except socket.error:
+            return False

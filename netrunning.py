@@ -192,3 +192,18 @@ class NetRunning:
         results = fsi.file_read("loud_scan_results.txt")
         return results
     
+    def run_nmap_script(self, target_ip: str, script_name: str):
+        """Run a specific nmap script against the target IP and return the results."""
+        self.cs.speak(f"Running nmap script {script_name} against {target_ip}")
+        nm = PortScanner()
+        try:
+            nm.scan(hosts=target_ip, arguments=f'--script={script_name} -oN {target_ip}_{script_name}_results.txt')
+            if target_ip in nm.all_hosts():
+                self.cs.speak(f"Nmap script {script_name} executed successfully against {target_ip}. Results saved to {target_ip}_{script_name}_results.txt")
+                return f"{target_ip}_{script_name}_results.txt"
+            else:
+                self.cs.speak(f"Nmap script {script_name} did not find any information for {target_ip}.")
+                return None
+        except Exception as e:
+            self.cs.speak(f"An error occurred while running nmap script {script_name} against {target_ip}: {e}")
+            return None
